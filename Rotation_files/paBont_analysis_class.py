@@ -1,4 +1,3 @@
-
 from pynwb import NWBHDF5IO
 #from nwbwidgets import nwb2widget
 import h5py, glob, os
@@ -9,6 +8,8 @@ from dlab import psth_and_raster as pr
 import numpy as np
 import pandas as pd
 import os
+
+
 from tqdm.notebook import tqdm as tqdm
 import glob
 import pickle as pkl
@@ -27,7 +28,9 @@ import matplotlib.lines as mlines
 
 import statsmodels.api as sm
 from statsmodels.formula.api import mixedlm
-
+from scipy.ndimage import gaussian_filter1d
+from scipy.stats import gaussian_kde
+import glob
 
 class Eopn3_Ephys:
 
@@ -1127,7 +1130,7 @@ class Eopn3_Ephys:
         
             plt.savefig(f"{path}{col}_scatter.png")
             
-            plt.show()
+            # plt.show()
         # Bar Plots
         for col in changeHz_columns:
             plt.figure()
@@ -1384,7 +1387,7 @@ class Eopn3_Ephys:
                   
                                                 })
             
-                        # Now assign the nested lists to the DataFrame columns
+            # Now assign the nested lists to the DataFrame columns
 
 
     
@@ -1539,7 +1542,7 @@ class Eopn3_Ephys:
         if Savefig:
             # Save and show the plot
             plt.savefig(f"{path}{probeLetter}-{epoch}-{timeWindow}_scatter.png")
-            plt.show()
+            # plt.show()
 
         return fr_df
 
@@ -1639,20 +1642,9 @@ class Eopn3_Ephys:
                 # Uncomment the next line to stop the loop after one iteration
 
 
-    # def combine_specific_df(self,epoch,paths,savePath):
-    #     # Assuming df1, df2, and df3 are your DataFrames
-    #     for i in range(len(paths)):
-    #         df[i] = pd.read_csv(paths[i])
-    
-    
-    #     # Combine them into one DataFrame
-    #     combined_df = pd.concat([df1, df2, df3], ignore_index=True)
-
-    #     # Save the DataFrame
-    #     combined_df.to_csv(f"{savePath}{epoch}_combined_df.csv", index=False)
-
     def combine_specific_df(self, epoch, directory_path):
         # Get a list of all CSV files in the specified directory
+        
         csv_files = glob.glob(os.path.join(directory_path, '*.csv'))
 
         # Check if there are any CSV files to process
@@ -1665,6 +1657,8 @@ class Eopn3_Ephys:
 
         # Concatenate all DataFrames into one DataFrame
         combined_df = pd.concat(dfs, ignore_index=True)
+      
+        print(glob.glob(os.path.join(directory_path, '*.csv')))
 
         # Save the combined DataFrame
         combined_df.to_csv(f"{directory_path}/{epoch}_combined_df.csv", index=False)
@@ -2008,9 +2002,3 @@ class Eopn3_Ephys:
                 return (edges,hist,variance)
             if output =='fr':
                 return hist
-
-
-# # Assuming your data is in a pandas DataFrame named df with columns 'spikes', 'light', 'stimulus_type', and 'mouse_id'
-# model = mixedlm("spikes ~ light * stimulus_type", df, groups=df['mouse_id']).fit()
-# print(model.summary())
-
